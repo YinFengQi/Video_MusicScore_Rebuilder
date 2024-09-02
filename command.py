@@ -1,19 +1,13 @@
 import subprocess
 import configparser
 import os
+import tkinter as tk
+from tkinter import messagebox
 
 # ======== 可更改的参量 BEGIN ========
-# 修改这些变量以控制脚本的行为
-run_new_folder = 1
-run_capture = 0
-run_stitch = 0
-run_remove = 0
-run_detect = 0
-run_recut = 0
-run_pdf = 0
-
+# 以下是可更改的参量，可以根据需要进行修改，也可在图形化界面进行修改
 # 执行顺序（可在这里调整脚本执行顺序）
-execution_order = ['new_folder','capture','remove','stitch','detect','recut','pdf'] 
+execution_order = ['new_folder','capture','remove','stitch','detect','recut','pdf'] #别改这个
 
 # remove.py 参数
 remove_params = {
@@ -83,6 +77,85 @@ def run_script(script_name):
     except subprocess.CalledProcessError as e:
         print(f"Error while running {script_name}: {e}\n")
 
+            # 创建图形化界面
+# 在主窗口右侧添加run_new_folder等参数的调整按钮 
+def create_gui():
+    # 创建主窗口
+    window = tk.Tk()
+    window.title("Video Score Rebuilder")
+    
+    # 创建滚动条
+    scrollbar = tk.Scrollbar(window)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+    
+    # 创建文本框
+    text_box = tk.Text(window, yscrollcommand=scrollbar.set)
+    text_box.pack(side=tk.LEFT, fill=tk.BOTH)
+    
+    # 设置滚动条与文本框的关联
+    scrollbar.config(command=text_box.yview)
+    
+    # 创建参数调整按钮
+    def adjust_params():
+        # 获取文本框中的内容
+        config_content = text_box.get("1.0", tk.END)
+        
+        # 将文本框中的内容写入配置文件
+        with open('config.ini', 'w') as config_file:
+            config_file.write(config_content)
+        
+        # 提示用户配置文件已更新
+        messagebox.showinfo("Success", "Config file updated successfully.")
+        
+
+    run_new_folder = tk.BooleanVar()
+    run_capture = tk.BooleanVar()
+    run_stitch = tk.BooleanVar()
+    run_remove = tk.BooleanVar()
+    run_detect = tk.BooleanVar()
+    run_recut = tk.BooleanVar()
+    run_pdf = tk.BooleanVar()
+
+    # 创建 Checkbutton 并绑定到全局变量
+    run_new_folder_button = tk.Checkbutton(window, text="New Folder", variable=run_new_folder)
+    run_new_folder_button.pack()
+
+    run_capture_button = tk.Checkbutton(window, text="Capture", variable=run_capture)
+    run_capture_button.pack()
+    
+    run_remove_button = tk.Checkbutton(window, text="Remove", variable=run_remove)
+    run_remove_button.pack()
+
+    run_stitch_button = tk.Checkbutton(window, text="Stitch", variable=run_stitch)
+    run_stitch_button.pack()
+
+    run_detect_button = tk.Checkbutton(window, text="Detect", variable=run_detect)
+    run_detect_button.pack()
+
+    run_recut_button = tk.Checkbutton(window, text="Recut", variable=run_recut)
+    run_recut_button.pack()
+
+    run_pdf_button = tk.Checkbutton(window, text="PDF", variable=run_pdf)
+    run_pdf_button.pack()
+    # 创建参数调整按钮
+    adjust_params_button = tk.Button(window, text="Adjust Params", command=adjust_params)
+    adjust_params_button.pack()
+    
+    def close_window():
+        window.destroy()
+
+    run_button = tk.Button(window, text="Run Script", command=close_window)
+    run_button.pack()
+    # 读取配置文件内容并显示在文本框中
+    with open('config.ini', 'r') as config_file:
+        config_content = config_file.read()
+        text_box.insert(tk.END, config_content)
+        
+    
+    # 运行主循环
+    window.mainloop()
+    return run_new_folder.get(), run_capture.get(), run_stitch.get(), run_remove.get(), run_detect.get(), run_recut.get(), run_pdf.get()
+
 # 控制逻辑
 if __name__ == "__main__":
     # 创建配置文件
@@ -93,7 +166,9 @@ if __name__ == "__main__":
         'detect': detect_params,
         'pdf': pdf_params,
     })
-
+    
+    run_new_folder, run_capture, run_stitch, run_remove, run_detect, run_recut, run_pdf =create_gui()
+    
     for script in execution_order:
         if script == 'capture' and run_capture:
             run_script('capture')
