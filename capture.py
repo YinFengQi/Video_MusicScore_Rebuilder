@@ -10,6 +10,7 @@ segment__duration = int(config['capture']['segment_duration'])
 frame__interval = int(config['capture']['frame_interval'])
 score_threshold = float(config['capture']['score_threshold'])
 light_threshold = float(config['capture']['light_threshold'])
+search_area = config['capture']['search_area']
 
 # 使用这些参数进行处理
 print("参数已接收")
@@ -60,7 +61,7 @@ def capture_frames(video_path, output_dir, start_time, end_time, frame_interval)
     cap.release()
 
 
-def extract_score_area(frame, score_threshold=score_threshold, search_area='top'):
+def extract_score_area(frame, score_threshold=score_threshold, search_area=search_area):
     # 将图像转换为灰度图
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     _, binary = cv2.threshold(gray, score_threshold, 255, cv2.THRESH_BINARY)

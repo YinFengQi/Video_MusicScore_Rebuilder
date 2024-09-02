@@ -41,6 +41,7 @@ capture_params = {
     'frame_interval':1,
     'score_threshold': 200,
     'light_threshold': 250,
+    'search_area': 'bottom',
 }
 detect_params = {
     'manual': True,
