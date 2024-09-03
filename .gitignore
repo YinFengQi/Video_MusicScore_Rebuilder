@@ -1,3 +1,9 @@
 video/
+detect/
+output_folder/
+recut/
+stitch/
+
 *.txt
 *.log
+*__pycache__*
